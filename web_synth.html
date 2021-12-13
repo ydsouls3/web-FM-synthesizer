@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+    
+	<title>web_synth</title>
+    	
+	<link rel="stylesheet" href="jquery/jquery.mobile-1.3.2.min.css" />
+
+	<!--<script src="js/synth.js" type="application/javascript"></script>-->
+
+	<style type="text/css">
+		table {
+			border-collapse: collapse;
+			border-spacing: 0;
+		}
+		td {
+			padding: 0px 10px;
+			margin: 0px;
+		}
+		table.settings tr {
+			transition: 0.25s;
+		}
+		table.settings tr:hover {
+			background-color: #ded;
+		}
+        /*
+		#pianokeyboard {
+	        width: 70%; height: 140px;
+	        background-color:#808080;
+	        overflow-x: auto;
+            position: relative;
+        }
+        .whitekey,.blackkey {
+            border: 1px black solid;
+            position: absolute;
+        }
+        .whitekey {
+	        background-color: white;
+	        width: 30px; height: 120px;
+        }
+        .blackkey {
+	        background-color: black;
+	        width: 20px; height: 80px;
+	        z-index: 1;
+        }
+		*/
+		#pianokeyboard {
+			width: 70%;
+		    height: 140px;
+		    background-color: #808080; color: white;
+		    border-style: solid;
+		    border-color: #C0C0C0;
+		    overflow-x: auto;
+		    overflow-y: none;
+		    resize: both;
+		    position: relative;
+		    scroll-snap-type: x mandatory;
+	    }
+	    .whitekey,.blackkey {
+		    position: absolute;
+		    top: 1px;
+		    display: flex;
+		    justify-content: center;
+		    align-items: flex-end;
+		    border-radius: 0 0 2px 2px;
+	    }
+	    .whitekey {
+		    width: 28px; height: calc(100% - 16px);
+		    background-color: #E0E0E0;
+		    border-style: groove;
+		    border-width: 0 1px 1px 1px;
+		    border-color: #D0D0D0;
+		    scroll-snap-align: start;
+	    }
+	    .blackkey {
+		    width: 15px; height: calc(65% - 16px); z-index: 1;
+		    background-color: #404040;
+		    border-style: outset;
+		    border-width: 0 3px 3px 3px;
+		    border-color: #404040;
+	    }
+		.pressed.whitekey {
+		    border-style: inset;
+	    }
+	    .pressed.blackkey {
+		    border-style: solid;
+	    }
+
+	</style>
+  </head>
+
+  <body>
+   <div data-role="page" id="main_page"> 
+	
+	<div data-role="header">
+		<h1>web synthesizer</h1>
+	</div>  
+
+	<div role="main">
+
+	<!--<button id="playBtn">Play</button>
+	<button id="stopBtn">Stop</button>-->	
+	
+	<h3>Osc</h3>
+	<table width=80% cellpadding="0" border="0" >
+	<tr>	
+	波形:<select id="typeSelect">
+		<option value="sine">正弦波</option>
+		<option value="square">矩形波</option>
+		<option value="sawtooth">ノコギリ波</option>
+		<option value="triangle">三角波</option>
+	  </select>
+	</tr><br>
+    <!--周波数:<input type="number" id="frequencyNumber" min=20 max=20000 value=440><br>-->
+	<tr>
+	 <td>フィルタ:<select id="filterType">
+		<option value="lowpass">lowPass</option>
+		<option value="highpass">highPass</option>
+		<option value="bandpass">bandPass</option>
+	  </select> 
+	 </td> 
+	 <td>カットオフ周波数:<input type="number" id="cutoff" min=20 max=20000 value=800></td>
+	</tr><br>	
+	<tr>ボリューム:<input type="range" id="volSlider" min=0 max=1 step=0.1 value=0.7></tr><br>
+	<tr>
+	 <td>エンベロープ(ADSR):</td>	
+	 <td>attack:<input type="range" id="attackSlider" min=0 max=10 step=0.1 value=0.1></td>
+	 <td>decay:<input type="range" id="decaySlider" min=0 max=10 step=0.1 value=1></td>
+	 <td>sustain:<input type="range" id="sustainSlider" min=0 max=1 step=0.1 value=0.5></td>
+	 <td>release:<input type="range" id="releaseSlider" min=0 max=10 step=0.1 value=0.1></td>
+    </tr><br>
+    </table>
+
+	<table width=60% cellpadding="0" border="0" class="settings">
+	 <tr>
+	  <td><h3>mod1 (volume)</h3></td>	 
+	  <td><h3>mod2 (frequency)</h3></td>
+	  <td><h3>mod3 (filterCutoff)</h3></td>
+	 </tr> 
+	 <tr>
+	  <td>ボリューム:<input type="range" id="modGain1" min=0 max=1000 step=1 value=0></td>	 
+	  <td>ボリューム:<input type="range" id="modGain2" min=0 max=1000 step=1 value=0></td>
+	  <td>ボリューム:<input type="range" id="modGain3" min=0 max=1000 step=1 value=0></td>
+	 </tr>	 
+	 <tr>
+	  <td>
+		波形:<select id="typeSelect1">
+			<option value="sine">正弦波</option>
+			<option value="square">矩形波</option>
+			<option value="sawtooth">ノコギリ波</option>
+			<option value="triangle">三角波</option>
+		  </select>
+	  </td>	 
+	  <td>
+		波形:<select id="typeSelect2">
+			<option value="sine">正弦波</option>
+			<option value="square">矩形波</option>
+			<option value="sawtooth">ノコギリ波</option>
+			<option value="triangle">三角波</option>
+		  </select>	  
+	  </td>
+	  <td>
+		波形:<select id="typeSelect3">
+			<option value="sine">正弦波</option>
+			<option value="square">矩形波</option>
+			<option value="sawtooth">ノコギリ波</option>
+			<option value="triangle">三角波</option>
+		  </select>	  
+	  </td>
+	 </tr>	 
+     <tr>
+		<td>周波数:<input type="number" id="frequencyNumber1" min=5 max=20000 value=5></td>
+		<td>周波数:<input type="number" id="frequencyNumber2" min=5 max=20000 value=5></td>
+		<td>周波数:<input type="number" id="frequencyNumber3" min=5 max=20000 value=5></td>
+	 </tr> 
+    </table>
+	<br>
+	
+	<div>
+		<!--<input id="volume" type="range"/>
+		<select id="waveselect" style="height: 32px;">
+		 <option>sine</option>
+		 <option>square</option>
+		 <option selected>sawtooth</option>
+		 <option>triangle</option>
+		</select>-->
+	</div>
+	<div id="pianokeyboard" tabindex="0"></div><br>
+	*鍵盤部分をマウスでクリック or 鍵盤部分をフォーカスしてキーボード(Q,W,E,...)で出音
+
+	</div>
+   </div>
+  </body>
+  <script src="js/keyboard.js" type="application/javascript"></script>
+
+  <!--<script src="js/osc.js" type="application/javascript"></script>-->
+
+  <script src="jquery/jquery-1.9.1.min.js"></script>
+  <script src="jquery/jquery.mobile-1.3.2.min.js"></script>
+
+</html>
